@@ -191,14 +191,12 @@ with st.container():
 if analyze_btn:
     # Vérifications de validation
     supports = st.session_state.supports
-
     invalid_supports = [s for s in supports if s['location'] > beam_length]
     if invalid_supports:
         st.error("❌ Appuis invalides détectés :")
         for supp in invalid_supports:
             st.markdown(f"- {supp['type'].title()} à {supp['location']}m (max autorisé : {beam_length}m)")
         st.stop()
-
     if len(supports) == 1 and supports[0]['type'] != 'fixed':
         st.error("❌ Un seul appui doit être de type encastré !")
         st.stop()
@@ -206,52 +204,35 @@ if analyze_btn:
         st.error("❌ Au moins un appui est requis !")
         st.stop()
 
-    invalid_forces = [f for f in st.session_state.forces if f['location'] > beam_length]
-    if invalid_forces:
-        st.error("❌ Charges invalides détectées :")
-        for force in invalid_forces:
-            st.markdown(f"- {force['strength']} kN à {force['location']}m (max autorisé : {beam_length}m)")
-        st.stop()
-
-    invalid_distributed_loads = [dl for dl in st.session_state.distributed_loads if dl['x1'] > beam_length or dl['x2'] > beam_length]
-    if invalid_distributed_loads:
-        st.error("❌ Charges réparties invalides détectées :")
-        for load in invalid_distributed_loads:
-            st.markdown(f"- De {load['x1']}m à {load['x2']}m (max autorisé : {beam_length}m)")
-        st.stop()
-
     with st.spinner("Analyse de la structure de la poutre..."):
         try:
-            fig_beam, fig_moment, fig_shear = analyze_beam(
+            # Call the backend function
+            beam_fig, moment_fig, shear_fig = analyze_beam(
                 beam_length,
                 st.session_state.forces,
                 st.session_state.supports,
                 st.session_state.distributed_loads
             )
 
-            # Affichage des résultats
+            # Display the results using the explicit figures
             result_col1, result_col2, result_col3 = st.columns(3)
 
             with result_col1:
                 with st.container(border=True):
                     st.markdown("### Configuration de la poutre")
-                    st.pyplot(fig_beam)
-                    plt.close(fig_beam)
+                    st.pyplot(beam_fig)  # Pass the figure explicitly
 
             with result_col2:
                 with st.container(border=True):
                     st.markdown("### Moment fléchissant")
-                    st.pyplot(fig_moment)
-                    plt.close(fig_moment)
+                    st.pyplot(moment_fig)  # Pass the figure explicitly
 
             with result_col3:
                 with st.container(border=True):
                     st.markdown("### Effort tranchant")
-                    st.pyplot(fig_shear)
-                    plt.close(fig_shear)
+                    st.pyplot(shear_fig)  # Pass the figure explicitly
 
             st.success("Analyse terminée avec succès !")
-
         except Exception as e:
             st.error(f"Échec de l'analyse : {str(e)}")
             plt.close('all')
