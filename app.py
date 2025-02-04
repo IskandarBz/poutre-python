@@ -15,8 +15,7 @@ if 'distributed_loads' not in st.session_state:
 # Configuration de la page
 st.set_page_config(page_title="Outil d'Analyse de Poutre 2D", layout="wide")
 st.title("Outil d'Analyse de Poutre 2D")
-st.markdown("<p> Développé par Bouazza Iskandar - iskandarbouazza@etu.enp-oran.dz</p>",unsafe_allow_html=True)
-st.markdown("---")
+
 # Disposition verticale principale
 with st.container():
     # Entrée de la longueur de la poutre
@@ -142,7 +141,7 @@ with st.container():
 
             if st.button("➕ Add Support", key="add_support"):
                 if any(s['location'] == new_supp_loc for s in st.session_state.supports):
-                    st.warning("Un appui existe déja à cette position!")
+                    st.warning("Un appui existe déjà à cette position!")
                 elif new_supp_loc > beam_length:
                     st.warning("❌ La position de l'appui ne peut pas dépasser la longueur de la poutre !")
                 else:
@@ -222,7 +221,7 @@ if analyze_btn:
 
     with st.spinner("Analyse de la structure de la poutre..."):
         try:
-            beam_fig, moment_fig, shear_fig = analyze_beam(
+            fig_beam, fig_moment, fig_shear = analyze_beam(
                 beam_length,
                 st.session_state.forces,
                 st.session_state.supports,
@@ -235,20 +234,20 @@ if analyze_btn:
             with result_col1:
                 with st.container(border=True):
                     st.markdown("### Configuration de la poutre")
-                    st.pyplot(beam_fig)
-                    plt.close(beam_fig)
+                    st.pyplot(fig_beam)
+                    plt.close(fig_beam)
 
             with result_col2:
                 with st.container(border=True):
                     st.markdown("### Moment fléchissant")
-                    st.pyplot(moment_fig)
-                    plt.close(moment_fig)
+                    st.pyplot(fig_moment)
+                    plt.close(fig_moment)
 
             with result_col3:
                 with st.container(border=True):
                     st.markdown("### Effort tranchant")
-                    st.pyplot(shear_fig)
-                    plt.close(shear_fig)
+                    st.pyplot(fig_shear)
+                    plt.close(fig_shear)
 
             st.success("Analyse terminée avec succès !")
 
