@@ -15,7 +15,6 @@ if 'distributed_loads' not in st.session_state:
 # Configuration de la page
 st.set_page_config(page_title="Outil d'Analyse de Poutre 2D", layout="wide")
 st.title("Outil d'Analyse de Poutre 2D")
-st.markdown("<p>Developpé par Bouazza Iskandar - iskandar.bouazza@etu.enp-oran.dz</p>",unsafe_allow_html= True)
 
 # Disposition verticale principale
 with st.container():
@@ -142,7 +141,7 @@ with st.container():
 
             if st.button("➕ Add Support", key="add_support"):
                 if any(s['location'] == new_supp_loc for s in st.session_state.supports):
-                    st.warning("Un appui existe déjà à cette position!")
+                    st.warning("Un appui existe déja à cette position!")
                 elif new_supp_loc > beam_length:
                     st.warning("❌ La position de l'appui ne peut pas dépasser la longueur de la poutre !")
                 else:
@@ -191,12 +190,14 @@ with st.container():
 if analyze_btn:
     # Vérifications de validation
     supports = st.session_state.supports
+
     invalid_supports = [s for s in supports if s['location'] > beam_length]
     if invalid_supports:
         st.error("❌ Appuis invalides détectés :")
         for supp in invalid_supports:
             st.markdown(f"- {supp['type'].title()} à {supp['location']}m (max autorisé : {beam_length}m)")
         st.stop()
+
     if len(supports) == 1 and supports[0]['type'] != 'fixed':
         st.error("❌ Un seul appui doit être de type encastré !")
         st.stop()
@@ -204,9 +205,22 @@ if analyze_btn:
         st.error("❌ Au moins un appui est requis !")
         st.stop()
 
+    invalid_forces = [f for f in st.session_state.forces if f['location'] > beam_length]
+    if invalid_forces:
+        st.error("❌ Charges invalides détectées :")
+        for force in invalid_forces:
+            st.markdown(f"- {force['strength']} kN à {force['location']}m (max autorisé : {beam_length}m)")
+        st.stop()
+
+    invalid_distributed_loads = [dl for dl in st.session_state.distributed_loads if dl['x1'] > beam_length or dl['x2'] > beam_length]
+    if invalid_distributed_loads:
+        st.error("❌ Charges réparties invalides détectées :")
+        for load in invalid_distributed_loads:
+            st.markdown(f"- De {load['x1']}m à {load['x2']}m (max autorisé : {beam_length}m)")
+        st.stop()
+
     with st.spinner("Analyse de la structure de la poutre..."):
         try:
-            # Call the backend function
             beam_fig, moment_fig, shear_fig = analyze_beam(
                 beam_length,
                 st.session_state.forces,
@@ -214,25 +228,29 @@ if analyze_btn:
                 st.session_state.distributed_loads
             )
 
-            # Display the results using the explicit figures
+            # Affichage des résultats
             result_col1, result_col2, result_col3 = st.columns(3)
 
             with result_col1:
                 with st.container(border=True):
                     st.markdown("### Configuration de la poutre")
-                    st.pyplot(beam_fig)  # Pass the figure explicitly
+                    st.pyplot(beam_fig)
+                    plt.close(beam_fig)
 
             with result_col2:
                 with st.container(border=True):
                     st.markdown("### Moment fléchissant")
-                    st.pyplot(moment_fig)  # Pass the figure explicitly
+                    st.pyplot(moment_fig)
+                    plt.close(moment_fig)
 
             with result_col3:
                 with st.container(border=True):
                     st.markdown("### Effort tranchant")
-                    st.pyplot(shear_fig)  # Pass the figure explicitly
+                    st.pyplot(shear_fig)
+                    plt.close(shear_fig)
 
             st.success("Analyse terminée avec succès !")
+
         except Exception as e:
             st.error(f"Échec de l'analyse : {str(e)}")
             plt.close('all')
