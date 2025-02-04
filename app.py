@@ -15,7 +15,8 @@ if 'distributed_loads' not in st.session_state:
 # Configuration de la page
 st.set_page_config(page_title="Outil d'Analyse de Poutre 2D", layout="wide")
 st.title("Outil d'Analyse de Poutre 2D")
-
+st.markdown("<p> Développé par Bouazza Iskandar - iskandarbouazza@etu.enp-oran.dz</p>",unsafe_allow_html=True)
+st.markdown("---")
 # Disposition verticale principale
 with st.container():
     # Entrée de la longueur de la poutre
