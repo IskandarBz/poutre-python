@@ -2,7 +2,4 @@ matplotlib==3.10.0
 planesections==1.3.9
 streamlit==1.41.1
 openseespy==3.5.1.3
-<<<<<<< HEAD
-=======
-openseespywin==3.5.1.3
->>>>>>> a6af261 (Update requirements.txt)
+
