@@ -1,12 +1,11 @@
 import streamlit as st
 from backend import analyze_beam
 import matplotlib.pyplot as plt
-import planesections as ps
 import sys
-import pkg_resources
+import planesections as ps
+
+# This MUST be the first Streamlit command
 st.set_page_config(page_title="Outil d'Analyse de Poutre 2D", layout="wide")
-installed_packages = [f"{dist.key} {dist.version}" for dist in pkg_resources.working_set]
-st.write("Installed packages:", installed_packages)
 # Initialisation de l'état de session
 if 'forces' not in st.session_state:
     st.session_state.forces = []
@@ -193,9 +192,15 @@ with st.container():
 
 # Affichage des résultats
 if analyze_btn:
-    st.write("### Environment Information")
-    st.write(f"Python version: {sys.version}")
-    st.write(f"Planesections version: {ps.__version__}")
+    with st.expander("Environment Information", expanded=False):
+        st.write(f"Python version: {sys.version}")
+        # Get package version safely
+        try:
+            from importlib.metadata import version
+            ps_version = version('planesections')
+            st.write(f"Planesections version: {ps_version}")
+        except:
+            st.write("Planesections version: Unknown")
     # Vérifications de validation
     supports = st.session_state.supports
 
