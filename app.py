@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import planesections as ps
 import sys
 import pkg_resources
+st.set_page_config(page_title="Outil d'Analyse de Poutre 2D", layout="wide")
 installed_packages = [f"{dist.key} {dist.version}" for dist in pkg_resources.working_set]
 st.write("Installed packages:", installed_packages)
 # Initialisation de l'état de session
@@ -17,7 +18,7 @@ if 'distributed_loads' not in st.session_state:
     st.session_state.distributed_loads = []
 
 # Configuration de la page
-st.set_page_config(page_title="Outil d'Analyse de Poutre 2D", layout="wide")
+
 st.title("Outil d'Analyse de Poutre 2D")
 
 # Disposition verticale principale
