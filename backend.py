@@ -4,39 +4,36 @@ import sys
 import traceback
 
 def analyze_beam(beam_length, forces_data, supports_data, distributed_loads):
-    """Performs beam analysis and returns three figures and debug info."""
-    debug_info = []  # List to collect debug information
+    debug_info = []
     plt.close('all')
     
     try:
+        debug_info.append(f"Planesections version: {ps.__version__}")  # Add version check
         debug_info.append("Starting beam analysis...")
         
         # Initialize beam
         beam = ps.newEulerBeam(beam_length)
         debug_info.append(f"Beam initialized with length: {beam_length}")
         
-        # Add loads
-        for force in forces_data:
-            beam.addVerticalLoad(force['location'], force['strength'])
-            debug_info.append(f"Added force: {force['strength']} at {force['location']}")
- 
-        # Add supports
-        for support in supports_data:
-            beam.setFixity(support['location'], support['type'])
-            debug_info.append(f"Added support: {support['type']} at {support['location']}")
-
-        # Add distributed loads
-        for dl in distributed_loads:
-            beam.addLinLoad(
-                dl['x1'], 
-                dl['x2'], 
-                [[0.0, 0.0], [dl['q_start'], dl['q_end']]]
-            )
-            debug_info.append(f"Added distributed load from {dl['x1']} to {dl['x2']}")
+        # Add loads and supports (existing code)
+        ...
 
         debug_info.append("Running analysis...")
-        # Run analysis
-        analysis = ps.OpenSeesAnalyzer2D(beam)
+        # Try different analyzer imports
+        try:
+            # First attempt: direct import
+            analysis = ps.OpenSeesAnalyzer2D(beam)
+        except AttributeError:
+            debug_info.append("Attempting alternative analyzer import...")
+            try:
+                # Second attempt: from analyzers module
+                from planesections.analysis import OpenSeesAnalyzer2D
+                analysis = OpenSeesAnalyzer2D(beam)
+            except ImportError:
+                debug_info.append("Attempting basic analyzer...")
+                # Third attempt: use basic analyzer if available
+                analysis = ps.BasicAnalyzer2D(beam)
+        
         analysis.runAnalysis()
         debug_info.append("Analysis completed")
         

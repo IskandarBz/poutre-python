@@ -1,7 +1,11 @@
 import streamlit as st
 from backend import analyze_beam
 import matplotlib.pyplot as plt
-
+import planesections as ps
+import sys
+import pkg_resources
+installed_packages = [f"{dist.key} {dist.version}" for dist in pkg_resources.working_set]
+st.write("Installed packages:", installed_packages)
 # Initialisation de l'état de session
 if 'forces' not in st.session_state:
     st.session_state.forces = []
@@ -188,6 +192,9 @@ with st.container():
 
 # Affichage des résultats
 if analyze_btn:
+    st.write("### Environment Information")
+    st.write(f"Python version: {sys.version}")
+    st.write(f"Planesections version: {ps.__version__}")
     # Vérifications de validation
     supports = st.session_state.supports
 
