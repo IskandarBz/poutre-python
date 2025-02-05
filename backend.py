@@ -37,18 +37,26 @@ def analyze_beam(beam_length, forces_data, supports_data, distributed_loads):
         plt.title('Configuration de la poutre')
         beam_fig = plt.gcf()
         
+        print("Beam diagram created")
+        print(f"Beam figure size: {beam_fig.get_size_inches()}")
+        print(f"Number of axes: {len(beam_fig.axes)}")
+
         # Create moment diagram
         plt.figure(figsize=(10, 4))
         ps.plotMoment(beam)
         plt.title('Moment fléchissant')
         moment_fig = plt.gcf()
-        
+        print("Beam diagram created")
+        print(f"Beam figure size: {moment_fig.get_size_inches()}")
+        print(f"Number of axes: {len(moment_fig.axes)}")
         # Create shear diagram
         plt.figure(figsize=(10, 4))
         ps.plotShear(beam)
         plt.title('Effort tranchant')
         shear_fig = plt.gcf()
-        
+        print("Beam diagram created")
+        print(f"Beam figure size: {shear_fig.get_size_inches()}")
+        print(f"Number of axes: {len(shear_fig.axes)}")
         return beam_fig, moment_fig, shear_fig
 
     except Exception as e:
