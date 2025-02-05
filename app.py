@@ -227,32 +227,31 @@ if analyze_btn:
                 st.session_state.supports,
                 st.session_state.distributed_loads
             )
-            
-            # Display results with explicit figures
-            result_col1, result_col2, result_col3 = st.columns(3)
-            
-            with result_col1:
-                with st.container(border=True):
-                    st.markdown("### Configuration de la poutre")
-                    st.pyplot(beam_fig)
-                    
-            with result_col2:
-                with st.container(border=True):
-                    st.markdown("### Moment fléchissant")
-                    st.pyplot(moment_fig)
-                    
-            with result_col3:
-                with st.container(border=True):
-                    st.markdown("### Effort tranchant")
-                    st.pyplot(shear_fig)
-            
-            # Clean up
-            plt.close(beam_fig)
-            plt.close(moment_fig)
-            plt.close(shear_fig)
-            
-            st.success("Analyse terminée avec succès !")
-            
+
+            if all(fig is not None for fig in [beam_fig, moment_fig, shear_fig]):
+                result_col1, result_col2, result_col3 = st.columns(3)
+
+                with result_col1:
+                    with st.container(border=True):
+                        st.markdown("### Configuration de la poutre")
+                        st.pyplot(beam_fig)
+
+                with result_col2:
+                    with st.container(border=True):
+                        st.markdown("### Moment fléchissant")
+                        st.pyplot(moment_fig)
+
+                with result_col3:
+                    with st.container(border=True):
+                        st.markdown("### Effort tranchant")
+                        st.pyplot(shear_fig)
+
+                st.success("Analyse terminée avec succès !")
+
+            else:
+                st.error("Erreur lors de la génération des diagrammes")
+
         except Exception as e:
             st.error(f"Échec de l'analyse : {str(e)}")
+        finally:
             plt.close('all')

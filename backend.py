@@ -2,16 +2,12 @@ import planesections as ps
 import matplotlib.pyplot as plt
 
 def analyze_beam(beam_length, forces_data, supports_data, distributed_loads):
-    plt.close('all')
+    """Performs beam analysis and returns three figures."""
+    plt.close('all')  # Clean up any existing figures
     
     try:
         # Initialize beam
         beam = ps.newEulerBeam(beam_length)
-        
-        # Create explicit figures for each plot
-        beam_fig, beam_ax = plt.subplots()
-        moment_fig, moment_ax = plt.subplots()
-        shear_fig, shear_ax = plt.subplots()
         
         # Add loads
         for force in forces_data:
@@ -30,35 +26,32 @@ def analyze_beam(beam_length, forces_data, supports_data, distributed_loads):
                 dl['x2'], 
                 [[0.0, 0.0], [dl['q_start'], dl['q_end']]]
             )
+
+        # Run analysis first
+        analysis = ps.OpenSeesAnalyzer2D(beam)
+        analysis.runAnalysis()
         
         # Create beam diagram
+        plt.figure(figsize=(10, 4))
         ps.plotBeamDiagram(beam)
-        beam_fig = plt.gcf()
-        #beam_fig.set_size_inches(10, 4)
         plt.title('Configuration de la poutre')
-
-        # Run analysis
-        analysis = ps.OpenSeesAnalyzer2D(beam)
-        analysis.runAnalysis()
+        beam_fig = plt.gcf()
         
-        # Create beam diagram with explicit figure
-        ps.plotBeamDiagram(beam, ax=beam_ax)
-        beam_fig.suptitle('Configuration de la poutre')
+        # Create moment diagram
+        plt.figure(figsize=(10, 4))
+        ps.plotMoment(beam)
+        plt.title('Moment fléchissant')
+        moment_fig = plt.gcf()
         
-        # Run analysis
-        analysis = ps.OpenSeesAnalyzer2D(beam)
-        analysis.runAnalysis()
-        
-        # Create moment diagram with explicit figure
-        ps.plotMoment(beam, ax=moment_ax)
-        moment_fig.suptitle('Moment fléchissant')
-        
-        # Create shear diagram with explicit figure
-        ps.plotShear(beam, ax=shear_ax)
-        shear_fig.suptitle('Effort tranchant')
+        # Create shear diagram
+        plt.figure(figsize=(10, 4))
+        ps.plotShear(beam)
+        plt.title('Effort tranchant')
+        shear_fig = plt.gcf()
         
         return beam_fig, moment_fig, shear_fig
 
     except Exception as e:
         print(f"Analysis error: {e}")
+        plt.close('all')
         return None, None, None
