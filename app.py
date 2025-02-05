@@ -224,12 +224,21 @@ if analyze_btn:
 
     with st.spinner("Analyse de la structure de la poutre..."):
         try:
-            beam_fig, moment_fig, shear_fig = analyze_beam(
+            beam_fig, moment_fig, shear_fig, debug_info, error_info = analyze_beam(
                 beam_length,
                 st.session_state.forces,
                 st.session_state.supports,
                 st.session_state.distributed_loads
             )
+
+            if error_info is not None:
+                st.error("Échec de l'analyse")
+                with st.expander("Détails de l'erreur", expanded=True):
+                    st.write("Debug Information:")
+                    for info in debug_info:
+                        st.text(info)
+                    st.code(error_info['traceback'])
+                st.stop()
 
             # Display results
             result_col1, result_col2, result_col3 = st.columns(3)
@@ -253,5 +262,6 @@ if analyze_btn:
 
         except Exception as e:
             st.error("Échec de l'analyse. Veuillez vérifier vos entrées.")
+            st.write("Error:", str(e))
         finally:
             plt.close('all')
