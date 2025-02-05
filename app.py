@@ -221,12 +221,22 @@ if analyze_btn:
 
     with st.spinner("Analyse de la structure de la poutre..."):
         try:
-            beam_fig, moment_fig, shear_fig = analyze_beam(
+            beam_fig, moment_fig, shear_fig, debug_info, error_info = analyze_beam(
                 beam_length,
                 st.session_state.forces,
                 st.session_state.supports,
                 st.session_state.distributed_loads
             )
+
+            # Display debug information in an expander
+            with st.expander("Debug Information", expanded=error_info is not None):
+                st.write("### Debug Log")
+                for info in debug_info:
+                    st.text(info)
+                
+                if error_info:
+                    st.error("### Error Details")
+                    st.code(error_info['traceback'])
 
             if all(fig is not None for fig in [beam_fig, moment_fig, shear_fig]):
                 result_col1, result_col2, result_col3 = st.columns(3)
