@@ -221,7 +221,7 @@ if analyze_btn:
 
     with st.spinner("Analyse de la structure de la poutre..."):
         try:
-            beam_fig, moment_fig, shear_fig = analyze_beam(
+            beam_fig, moment_fig, shear_diagram_fig = analyze_beam(
                 beam_length,
                 st.session_state.forces,
                 st.session_state.supports,
@@ -246,8 +246,8 @@ if analyze_btn:
             with result_col3:
                 with st.container(border=True):
                     st.markdown("### Effort tranchant")
-                    st.pyplot(shear_fig)
-                    plt.close(shear_fig)
+                    st.pyplot(shear_diagram_fig)
+                    plt.close(shear_diagram_fig)
 
             st.success("Analyse terminée avec succès !")
 

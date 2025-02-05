@@ -45,7 +45,7 @@ def analyze_beam(beam_length, forces_data, supports_data,distributed_loads):
         plt.title('Moment fléchissant')
         # Create shear diagram
         plt.figure()  # New figure for shear
-        ps.plotShear(beam, labelPOI=True)
+        ps.plotShear(beam)
         shear_diagram_fig = plt.gcf()
         plt.title('Effort tranchant')
         
