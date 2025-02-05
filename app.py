@@ -1,10 +1,9 @@
 import streamlit as st
 from backend import analyze_beam
 import matplotlib.pyplot as plt
-import sys
-import planesections as ps
 
-# This MUST be the first Streamlit command
+
+
 st.set_page_config(page_title="Outil d'Analyse de Poutre 2D", layout="wide")
 # Initialisation de l'état de session
 if 'forces' not in st.session_state:
@@ -19,7 +18,7 @@ if 'distributed_loads' not in st.session_state:
 # Configuration de la page
 
 st.title("Outil d'Analyse de Poutre 2D")
-
+st.markdown("<p>Developpé par Bouazza Iskandar - iskandar.bouazza@etu.enp-oran.dz</p>",unsafe_allow_html= True)
 # Disposition verticale principale
 with st.container():
     # Entrée de la longueur de la poutre
@@ -192,15 +191,6 @@ with st.container():
 
 # Affichage des résultats
 if analyze_btn:
-    with st.expander("Environment Information", expanded=False):
-        st.write(f"Python version: {sys.version}")
-        # Get package version safely
-        try:
-            from importlib.metadata import version
-            ps_version = version('planesections')
-            st.write(f"Planesections version: {ps_version}")
-        except:
-            st.write("Planesections version: Unknown")
     # Vérifications de validation
     supports = st.session_state.supports
 
@@ -234,47 +224,34 @@ if analyze_btn:
 
     with st.spinner("Analyse de la structure de la poutre..."):
         try:
-            beam_fig, moment_fig, shear_fig, debug_info, error_info = analyze_beam(
+            beam_fig, moment_fig, shear_fig = analyze_beam(
                 beam_length,
                 st.session_state.forces,
                 st.session_state.supports,
                 st.session_state.distributed_loads
             )
 
-            # Display debug information in an expander
-            with st.expander("Debug Information", expanded=error_info is not None):
-                st.write("### Debug Log")
-                for info in debug_info:
-                    st.text(info)
-                
-                if error_info:
-                    st.error("### Error Details")
-                    st.code(error_info['traceback'])
+            # Display results
+            result_col1, result_col2, result_col3 = st.columns(3)
 
-            if all(fig is not None for fig in [beam_fig, moment_fig, shear_fig]):
-                result_col1, result_col2, result_col3 = st.columns(3)
+            with result_col1:
+                with st.container(border=True):
+                    st.markdown("### Configuration de la poutre")
+                    st.pyplot(beam_fig)
 
-                with result_col1:
-                    with st.container(border=True):
-                        st.markdown("### Configuration de la poutre")
-                        st.pyplot(beam_fig)
+            with result_col2:
+                with st.container(border=True):
+                    st.markdown("### Moment fléchissant")
+                    st.pyplot(moment_fig)
 
-                with result_col2:
-                    with st.container(border=True):
-                        st.markdown("### Moment fléchissant")
-                        st.pyplot(moment_fig)
+            with result_col3:
+                with st.container(border=True):
+                    st.markdown("### Effort tranchant")
+                    st.pyplot(shear_fig)
 
-                with result_col3:
-                    with st.container(border=True):
-                        st.markdown("### Effort tranchant")
-                        st.pyplot(shear_fig)
-
-                st.success("Analyse terminée avec succès !")
-
-            else:
-                st.error("Erreur lors de la génération des diagrammes")
+            st.success("Analyse terminée avec succès !")
 
         except Exception as e:
-            st.error(f"Échec de l'analyse : {str(e)}")
+            st.error("Échec de l'analyse. Veuillez vérifier vos entrées.")
         finally:
             plt.close('all')
