@@ -6,7 +6,7 @@ import traceback
 def analyze_beam(beam_length, forces_data, supports_data, distributed_loads):
     """Analyzes a 2D beam and returns the beam, moment, and shear diagrams."""
     plt.close('all')
-    debug_info = []  # Temporary debug info
+    debug_info = []
     
     try:
         debug_info.append("Starting analysis...")
@@ -40,21 +40,39 @@ def analyze_beam(beam_length, forces_data, supports_data, distributed_loads):
         analyzer.runAnalysis()
         debug_info.append("Analysis completed")
         
-        # Create diagrams
+        # Create diagrams with safe POI handling
         plt.figure(figsize=(10, 4))
         ps.plotBeamDiagram(beam)
         plt.title('Configuration de la poutre')
         beam_fig = plt.gcf()
         debug_info.append("Beam diagram created")
         
+        # Create moment diagram with safe POI handling
         plt.figure(figsize=(10, 4))
-        ps.plotMoment(beam, labelPOI=True)
+        try:
+            ps.plotMoment(beam, labelPOI=False)  # First try without POI labels
+            debug_info.append("Basic moment diagram created")
+            # If successful, try with POI labels
+            plt.close()
+            plt.figure(figsize=(10, 4))
+            ps.plotMoment(beam, labelPOI=True)
+        except:
+            debug_info.append("Using fallback moment diagram without POI")
         plt.title('Moment fléchissant')
         moment_fig = plt.gcf()
         debug_info.append("Moment diagram created")
         
+        # Create shear diagram with safe POI handling
         plt.figure(figsize=(10, 4))
-        ps.plotShear(beam, labelPOI=True)
+        try:
+            ps.plotShear(beam, labelPOI=False)  # First try without POI labels
+            debug_info.append("Basic shear diagram created")
+            # If successful, try with POI labels
+            plt.close()
+            plt.figure(figsize=(10, 4))
+            ps.plotShear(beam, labelPOI=True)
+        except:
+            debug_info.append("Using fallback shear diagram without POI")
         plt.title('Effort tranchant')
         shear_fig = plt.gcf()
         debug_info.append("Shear diagram created")
