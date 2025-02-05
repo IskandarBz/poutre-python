@@ -1,13 +1,17 @@
 import planesections as ps
 import matplotlib.pyplot as plt
 
-def analyze_beam(beam_length, forces_data, supports_data,distributed_loads):
-    """Performs beam analysis and returns exactly two figures."""
-    plt.close('all')  # Clean up any existing figures
+def analyze_beam(beam_length, forces_data, supports_data, distributed_loads):
+    plt.close('all')
     
     try:
         # Initialize beam
         beam = ps.newEulerBeam(beam_length)
+        
+        # Create explicit figures for each plot
+        beam_fig, beam_ax = plt.subplots()
+        moment_fig, moment_ax = plt.subplots()
+        shear_fig, shear_ax = plt.subplots()
         
         # Add loads
         for force in forces_data:
@@ -37,19 +41,23 @@ def analyze_beam(beam_length, forces_data, supports_data,distributed_loads):
         analysis = ps.OpenSeesAnalyzer2D(beam)
         analysis.runAnalysis()
         
-        # Create moment diagram
-        plt.figure()  # Explicit new figure
-        ps.plotMoment(beam)
-        moment_fig = plt.gcf()
-        #moment_fig.set_size_inches(10, 4)
-        plt.title('Moment fléchissant')
-        # Create shear diagram
-        plt.figure()  # New figure for shear
-        ps.plotShear(beam)
-        shear_diagram_fig = plt.gcf()
-        plt.title('Effort tranchant')
+        # Create beam diagram with explicit figure
+        ps.plotBeamDiagram(beam, ax=beam_ax)
+        beam_fig.suptitle('Configuration de la poutre')
         
-        return beam_fig, moment_fig, shear_diagram_fig
+        # Run analysis
+        analysis = ps.OpenSeesAnalyzer2D(beam)
+        analysis.runAnalysis()
+        
+        # Create moment diagram with explicit figure
+        ps.plotMoment(beam, ax=moment_ax)
+        moment_fig.suptitle('Moment fléchissant')
+        
+        # Create shear diagram with explicit figure
+        ps.plotShear(beam, ax=shear_ax)
+        shear_fig.suptitle('Effort tranchant')
+        
+        return beam_fig, moment_fig, shear_fig
 
     except Exception as e:
         print(f"Analysis error: {e}")

@@ -221,36 +221,38 @@ if analyze_btn:
 
     with st.spinner("Analyse de la structure de la poutre..."):
         try:
-            beam_fig, moment_fig, shear_diagram_fig = analyze_beam(
+            beam_fig, moment_fig, shear_fig = analyze_beam(
                 beam_length,
                 st.session_state.forces,
                 st.session_state.supports,
                 st.session_state.distributed_loads
             )
-
-            # Affichage des résultats
+            
+            # Display results with explicit figures
             result_col1, result_col2, result_col3 = st.columns(3)
-
+            
             with result_col1:
                 with st.container(border=True):
                     st.markdown("### Configuration de la poutre")
                     st.pyplot(beam_fig)
-                    plt.close(beam_fig)
-
+                    
             with result_col2:
                 with st.container(border=True):
                     st.markdown("### Moment fléchissant")
                     st.pyplot(moment_fig)
-                    plt.close(moment_fig)
-
+                    
             with result_col3:
                 with st.container(border=True):
                     st.markdown("### Effort tranchant")
-                    st.pyplot(shear_diagram_fig)
-                    plt.close(shear_diagram_fig)
-
+                    st.pyplot(shear_fig)
+            
+            # Clean up
+            plt.close(beam_fig)
+            plt.close(moment_fig)
+            plt.close(shear_fig)
+            
             st.success("Analyse terminée avec succès !")
-
+            
         except Exception as e:
             st.error(f"Échec de l'analyse : {str(e)}")
             plt.close('all')
